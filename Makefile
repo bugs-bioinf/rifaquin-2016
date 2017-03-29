@@ -10,6 +10,7 @@ ALIGNMENTS = alignments
 PHYLOGENY  = phylogeny
 DATA       = data
 VCF        = vcf
+SPOLPRED   = spolpred
 
 ## exe locations
 
@@ -21,6 +22,9 @@ vcf     = $(addprefix $(VCF)/$(REF)_, $(addsuffix .vcf, $(STRAINS) ) )
 sites   = $(addprefix $(VCF)/$(REF)_, $(addsuffix .all.vcf.gz, $(STRAINS) ) )
 pairs   = $(addprefix $(PHYLOGENY)/individuals/$(REF)_, $(addsuffix .infile, $(PAIRS) ) )
 mixed   = $(addprefix $(VCF)/$(REF)_, $(addsuffix .all.vcf.gz.mixed.png, $(STRAINS) ) )
+fastq   = $(addprefix $(SPOLPRED)/, $(addsuffix .fastq, $(STRAINS) ) )
+spolpred = $(addprefix $(SPOLPRED)/, $(addsuffix .txt, $(STRAINS) ) )
+indels  = $(addprefix indels/$(REF)_, $(addsuffix .indels.vcf, $(PAIRS) ) )
 
 all: index alignments sites mixed trees pairs figures
 index: $(indexed)
@@ -29,6 +33,9 @@ sites: $(sites)
 snps: $(vcf)
 pairs: $(pairs)
 mixed: $(mixed)
+fastq: $(fastq)
+spolpred: $(spolpred)
+indels: $(indels)
 
 versions:
 	@samtools 2>&1 | grep Version | perl -p -e 's/Version/samtools/' > versions.txt
@@ -44,7 +51,7 @@ $(VCF)/$(REF)_%.all.vcf.gz: $(ALIGNMENTS)/$(REF)_%.bam
 	gzip -S .gz $(VCF)/$(REF)_$*.all.vcf
 
 $(VCF)/$(REF)_%.vcf: $(ALIGNMENTS)/$(REF)_%.bam
-	samtools mpileup -gf $(GENOMES)/$(REF).fna $(ALIGNMENTS)/$(REF)_$*.bam | bcftools view -bvcg - > $(VCF)/$*.raw.bcf && bcftools view $(VCF)/$*.raw.bcf  | vcfutils.pl varFilter -D 100 > $@
+	samtools mpileup -L 20000 -d 20000 -F 0.05 -ugf $(GENOMES)/$(REF).fna $(ALIGNMENTS)/$(REF)_$*.bam | bcftools view -bvcg - > $(VCF)/$*.raw.bcf && bcftools view $(VCF)/$*.raw.bcf  | vcfutils.pl varFilter -D 20000 > $@
 	rm $(VCF)/$*.raw.bcf
 
 $(ALIGNMENTS)/$(REF)_%.bam: $(GENOMES)/$(REF).fna.bwt
@@ -161,4 +168,20 @@ figures/figure_2.png: $(PHYLOGENY)/RAxML_bipartitions.NC_000962.b1
 	Rscript scripts/figure_2.R
 
 figures: figures/figure_2.png figures/figure_4a.png figures/figure_4b.png figures/figure_4c.png figures/figure_4d.png
+
+
+$(SPOLPRED)/%.fastq:
+	perl scripts/merge_fastq.pl $(DATA)/$*_1.fastq.gz $(DATA)/$*_2.fastq.gz $(SPOLPRED)/$*.fastq
+
+$(SPOLPRED)/%.txt: $(SPOLPRED)/%.fastq
+	spolpred $(SPOLPRED)/$*.fastq -l 100 -o $(SPOLPRED)/$*.txt
+
+lineages:
+	for i in vcf/*.gz ; do perl scripts/check_lineages.pl scripts/lineages.txt $$i; done
+
+indels/$(REF)_%.indels.vcf:
+	perl scripts/snp_caller-indels.pl --chrom NC_000962.3 --qual 30 --dp 4 --dp4 75 --dpmax 5000 --af 1 --mq 30 \
+		--vcf $*-1,$(VCF)/$(REF)_$*-1.all.vcf.gz \
+		--vcf $*-2,$(VCF)/$(REF)_$*-2.all.vcf.gz \
+		--verbose 1 --gff /homedirs8/share/NGS/Mycobacterium/Genomes/NC_000962.gff
 
