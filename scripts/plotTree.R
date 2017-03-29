@@ -73,7 +73,7 @@ return(list(m=as.matrix(m),w=w,h=h))
 }
 
 
-plotTree<-function(tree,ladderise=NULL,heatmapData=NULL,barData=NULL,infoFile=NULL,blockFile=NULL,snpFile=NULL,gapChar="?",genome_size=5E6,blwd=5,block_colour="black",snp_colour="red",genome_offset=0,colourNodesBy=NULL,infoCols=NULL,outputPDF=NULL,outputPNG=NULL,w,h,heatmap.colours=rev(gray(seq(0,1,0.1))),tip.labels=F,tipLabelSize=1,offset=0,tip.colour.cex=0.5,legend=T,legend.pos="bottomleft",ancestral.reconstruction=F,cluster=NULL,tipColours=NULL,lwd=1.5,axis=F,axisPos=3,edge.color="black",infoCex=0.8,colLabelCex=0.8,treeWidth=10,infoWidth=10,dataWidth=30,edgeWidth=1,labelHeight=10,mainHeight=100,barDataWidth=10,blockPlotWidth=10,barDataCol=2,heatmapBreaks=NULL,heatmapDecimalPlaces=1,vlines.heatmap=NULL,vlines.heatmap.col=2,heatmap.blocks=NULL,pie.cex=0.5,closeDev=TRUE) {
+plotTree<-function(tree,ladderise=NULL,heatmapData=NULL,barData=NULL,infoFile=NULL,blockFile=NULL,snpFile=NULL,gapChar="?",genome_size=5E6,blwd=5,block_colour="black",snp_colour="red",genome_offset=0,colourNodesBy=NULL,infoCols=NULL,outputPDF=NULL,outputPNG=NULL,w,h,res,heatmap.colours=rev(gray(seq(0,1,0.1))),tip.labels=F,tipLabelSize=1,offset=0,tip.colour.cex=0.5,legend=T,legend.pos="bottomleft",ancestral.reconstruction=F,cluster=NULL,tipColours=NULL,lwd=1.5,axis=F,axisPos=3,edge.color="black",infoCex=0.8,colLabelCex=0.8,treeWidth=10,infoWidth=10,dataWidth=30,edgeWidth=1,labelHeight=10,mainHeight=100,barDataWidth=10,blockPlotWidth=10,barDataCol=2,heatmapBreaks=NULL,heatmapDecimalPlaces=1,vlines.heatmap=NULL,vlines.heatmap.col=2,heatmap.blocks=NULL,pie.cex=0.5,closeDev=TRUE) {
 
 require(ape)
 
@@ -192,7 +192,7 @@ pdf(width=w,height=h,file=outputPDF)
 }
 # open PNG for drawing
 if (!is.null(outputPNG)) {
-png(width=w,height=h,file=outputPNG)
+png(width=w,height=h,file=outputPNG,res=res)
 }
 
 
