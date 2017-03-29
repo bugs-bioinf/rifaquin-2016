@@ -18,5 +18,6 @@ The following tools are required
 * `RAxML`
 * `bwa`
 * `R`
+* `SpolPred`
 
 For versions used in this analysis check `versions.txt`
