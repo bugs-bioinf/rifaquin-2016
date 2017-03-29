@@ -26,7 +26,7 @@ fastq   = $(addprefix $(SPOLPRED)/, $(addsuffix .fastq, $(STRAINS) ) )
 spolpred = $(addprefix $(SPOLPRED)/, $(addsuffix .txt, $(STRAINS) ) )
 indels  = $(addprefix indels/$(REF)_, $(addsuffix .indels.vcf, $(PAIRS) ) )
 
-all: index alignments sites mixed trees pairs figures
+all: index alignments sites mixed trees pairs figures spolpred indels
 index: $(indexed)
 alignments: $(bam)
 sites: $(sites)
@@ -181,7 +181,7 @@ lineages:
 
 indels/$(REF)_%.indels.vcf:
 	perl scripts/snp_caller-indels.pl --chrom NC_000962.3 --qual 30 --dp 4 --dp4 75 --dpmax 5000 --af 1 --mq 30 \
-		--vcf $*-1,$(VCF)/$(REF)_$*-1.all.vcf.gz \
-		--vcf $*-2,$(VCF)/$(REF)_$*-2.all.vcf.gz \
-		--verbose 1 --gff /homedirs8/share/NGS/Mycobacterium/Genomes/NC_000962.gff
+		--vcf $(VCF)/$(REF)_$*-1.all.vcf.gz \
+		--vcf $(VCF)/$(REF)_$*-2.all.vcf.gz \
+		--verbose 1 --gff $(GENOMES)/$(REF).gff
 
