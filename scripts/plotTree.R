@@ -1,3 +1,5 @@
+# This is a slightly modified version of Dr Kat Holt's plotTree script https://github.com/katholt/plotTree
+
 # read  data and convert to data frame
 readMatrix<-function(heatmapData){
 if (is.matrix(heatmapData)) {
